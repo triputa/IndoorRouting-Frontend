@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Bluetooth Scanner</title>
+        <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            var port = 9838;
+            var hostname = window.location.hostname;
+            var socket = io(hostname+':'+port);
+
+            socket.on('welcome', function (message) {
+                console.log(message);
+            });
+
+            socket.on('device-added', function (device) {
+                $("#no-devices").hide();
+
+                $('<li>', {
+                    html: "Device named "+device.name+" with MAC "+ device.address+" is online."
+                }).appendTo('#devices');
+            });
+
+            socket.on('devices', function(devices){
+                if(devices.length > 0) $("#no-devices").hide();
+
+                $.each(devices, function(key, device){
+                    $('<li>', {
+                        html: "Device named <b>"+device.name+"</b> with MAC <b>"+ device.address+"</b> is online."
+                    }).appendTo('#devices');
+                });
+
+            });
+
+        </script>
+    </head>
+    <body>
+        <div>
+            <span id="no-devices">No devices yet...</span>
+            <ul id="devices"></ul>
+        </div>
+    </body>
+</html>
